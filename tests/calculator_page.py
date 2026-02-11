@@ -26,10 +26,8 @@ class CalculatorPage:
         return self.driver.find_element(By.ID, "calculate")
 
     def load_page(self):
-        file_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "src", "index.html")
-        )
-        self.driver.get(f"file://{file_path}")
+        # Utilise le serveur HTTP local au lieu de file://
+        self.driver.get("http://localhost:8000/index.html")
 
     def wait_ready(self):
         WebDriverWait(self.driver, 10).until(
@@ -52,7 +50,8 @@ class CalculatorPage:
         self.calculate_button.click()
 
     def get_result(self):
+        # Attendre que le résultat ait du texte (pas juste que l'élément existe)
         result = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, "result"))
+            lambda d: d.find_element(By.ID, "result").text.strip() != ""
         )
-        return result.text
+        return self.driver.find_element(By.ID, "result").text
